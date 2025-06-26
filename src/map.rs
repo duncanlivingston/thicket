@@ -124,42 +124,43 @@ where
     /// Unset a value by key.
     ///
     /// If the key does not exist, then this function has no effect.
-    pub fn unset(&mut self, key: &K) {
+    pub fn unset(&mut self, key: &K) -> Option<&(K, V)> {
         let tree = &mut self.tree.borrow_mut();
         let leaf = tree.get_kv(key, &self.key_value);
-        if !leaf != 0 {
+        if !leaf == 0 {
+            None
+        } else {
             tree.unset(leaf);
+            Some(&self.key_value[leaf])
         }
     }
 
     /// Get the first key in the map
-    pub fn first(&self) -> Option<(&K, &V)> {
+    pub fn first(&self) -> Option<&(K, V)> {
         let tree = &mut self.tree.borrow_mut();
         let leaf = tree.first();
         if !leaf == 0 {
             None
         } else {
             tree.promote(leaf);
-            let key_value = &self.key_value[leaf];
-            Some((&key_value.0, &key_value.1))
+            Some(&self.key_value[leaf])
         }
     }
 
     /// Get the last key in the map
-    pub fn last(&self) -> Option<(&K, &V)> {
+    pub fn last(&self) -> Option<&(K, V)> {
         let tree = &mut self.tree.borrow_mut();
         let leaf = tree.last();
         if !leaf == 0 {
             None
         } else {
             tree.promote(leaf);
-            let key_value = &self.key_value[leaf];
-            Some((&key_value.0, &key_value.1))
+            Some(&self.key_value[leaf])
         }
     }
 
     /// Pop the first key from the map
-    pub fn pop_first(&self) -> Option<(&K, &V)> {
+    pub fn pop_first(&self) -> Option<&(K, V)> {
         let tree = &mut self.tree.borrow_mut();
         let leaf = tree.first();
         if !leaf == 0 {
@@ -167,13 +168,12 @@ where
         } else {
             tree.promote(leaf);
             tree.unset(leaf);
-            let key_value = &self.key_value[leaf];
-            Some((&key_value.0, &key_value.1))
+            Some(&self.key_value[leaf])
         }
     }
 
     /// Pop the last key from the map
-    pub fn pop_last(&self) -> Option<(&K, &V)> {
+    pub fn pop_last(&self) -> Option<&(K, V)> {
         let tree = &mut self.tree.borrow_mut();
         let leaf = tree.last();
         if !leaf == 0 {
@@ -181,8 +181,7 @@ where
         } else {
             tree.promote(leaf);
             tree.unset(leaf);
-            let key_value = &self.key_value[leaf];
-            Some((&key_value.0, &key_value.1))
+            Some(&self.key_value[leaf])
         }
     }
 
@@ -379,11 +378,15 @@ impl<V> StringMap<V> {
     /// Unset a value by string.
     ///
     /// If the string does not exist, then this function has no effect.
-    pub fn unset(&mut self, key: &str) {
+    pub fn unset(&mut self, key: &str) -> Option<(&str, &V)> {
         let tree = &mut self.tree.borrow_mut();
         let leaf = tree.get_sv(key, &self.key_value);
-        if !leaf != 0 {
+        if !leaf == 0 {
+            None
+        } else {
             tree.unset(leaf);
+            let key_value = &self.key_value[leaf];
+            Some((&key_value.0, &key_value.1))
         }
     }
 
@@ -630,42 +633,43 @@ where
     /// Unset a value by key.
     ///
     /// If the key does not exist, then this function has no effect.
-    pub fn unset(&mut self, key: &K) {
+    pub fn unset(&mut self, key: &K) -> Option<&(K, V)> {
         let tree = &mut self.tree.borrow_mut();
         let leaf = tree.get_kv_by(key, &self.key_value, &self.compare);
-        if !leaf != 0 {
+        if !leaf == 0 {
+            None
+        } else {
             tree.unset(leaf);
+            Some(&self.key_value[leaf])
         }
     }
 
     /// Get the first key in the map
-    pub fn first(&self) -> Option<(&K, &V)> {
+    pub fn first(&self) -> Option<&(K, V)> {
         let tree = &mut self.tree.borrow_mut();
         let leaf = tree.first();
         if !leaf == 0 {
             None
         } else {
             tree.promote(leaf);
-            let key_value = &self.key_value[leaf];
-            Some((&key_value.0, &key_value.1))
+            Some(&self.key_value[leaf])
         }
     }
 
     /// Get the last key in the map
-    pub fn last(&self) -> Option<(&K, &V)> {
+    pub fn last(&self) -> Option<&(K, V)> {
         let tree = &mut self.tree.borrow_mut();
         let leaf = tree.last();
         if !leaf == 0 {
             None
         } else {
             tree.promote(leaf);
-            let key_value = &self.key_value[leaf];
-            Some((&key_value.0, &key_value.1))
+            Some(&self.key_value[leaf])
         }
     }
 
     /// Pop the first key from the map
-    pub fn pop_first(&self) -> Option<(&K, &V)> {
+    pub fn pop_first(&self) -> Option<&(K, V)> {
         let tree = &mut self.tree.borrow_mut();
         let leaf = tree.first();
         if !leaf == 0 {
@@ -673,13 +677,12 @@ where
         } else {
             tree.promote(leaf);
             tree.unset(leaf);
-            let key_value = &self.key_value[leaf];
-            Some((&key_value.0, &key_value.1))
+            Some(&self.key_value[leaf])
         }
     }
 
     /// Pop the last key from the map
-    pub fn pop_last(&self) -> Option<(&K, &V)> {
+    pub fn pop_last(&self) -> Option<&(K, V)> {
         let tree = &mut self.tree.borrow_mut();
         let leaf = tree.last();
         if !leaf == 0 {
@@ -687,8 +690,7 @@ where
         } else {
             tree.promote(leaf);
             tree.unset(leaf);
-            let key_value = &self.key_value[leaf];
-            Some((&key_value.0, &key_value.1))
+            Some(&self.key_value[leaf])
         }
     }
 
@@ -871,11 +873,15 @@ where
     /// Unset a value by string.
     ///
     /// If the string does not exist, then this function has no effect.
-    pub fn unset(&mut self, key: &str) {
+    pub fn unset(&mut self, key: &str) -> Option<(&str, &V)> {
         let tree = &mut self.tree.borrow_mut();
         let leaf = tree.get_sv_by(key, &self.key_value, &self.compare);
-        if !leaf != 0 {
+        if !leaf == 0 {
+            None
+        } else {
             tree.unset(leaf);
+            let key_value = &self.key_value[leaf];
+            Some((&key_value.0, &key_value.1))
         }
     }
 

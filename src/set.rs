@@ -108,11 +108,14 @@ where
     /// Unset a value by key.
     ///
     /// If the key does not exist, then this function has no effect.
-    pub fn unset(&mut self, key: &K) {
+    pub fn unset(&mut self, key: &K) -> Option<&K> {
         let tree = &mut self.tree.borrow_mut();
         let leaf = tree.get_k(key, &self.key_slice);
-        if !leaf != 0 {
+        if !leaf == 0 {
+            None
+        } else {
             tree.unset(leaf);
+            Some(&self.key_slice[leaf])
         }
     }
 
@@ -342,11 +345,14 @@ impl StringSet {
     /// Unset a value by string.
     ///
     /// If the string does not exist, then this function has no effect.
-    pub fn unset(&mut self, key: &str) {
+    pub fn unset(&mut self, key: &str) -> Option<&str> {
         let tree = &mut self.tree.borrow_mut();
         let leaf = tree.get_s(key, &self.key_slice);
-        if !leaf != 0 {
+        if !leaf == 0 {
+            None
+        } else {
             tree.unset(leaf);
+            Some(&self.key_slice[leaf])
         }
     }
 
@@ -572,11 +578,14 @@ where
     /// Unset a value by key.
     ///
     /// If the key does not exist, then this function has no effect.
-    pub fn unset(&mut self, key: &K) {
+    pub fn unset(&mut self, key: &K) -> Option<&K> {
         let tree = &mut self.tree.borrow_mut();
         let leaf = tree.get_k_by(key, &self.key_slice, &self.compare);
-        if !leaf != 0 {
+        if !leaf == 0 {
+            None
+        } else {
             tree.unset(leaf);
+            Some(&self.key_slice[leaf])
         }
     }
 
@@ -792,11 +801,14 @@ where
     /// Unset a value by string.
     ///
     /// If the string does not exist, then this function has no effect.
-    pub fn unset(&mut self, key: &str) {
+    pub fn unset(&mut self, key: &str) -> Option<&str> {
         let tree = &mut self.tree.borrow_mut();
         let leaf = tree.get_s_by(key, &self.key_slice, &self.compare);
-        if !leaf != 0 {
+        if !leaf == 0 {
+            None
+        } else {
             tree.unset(leaf);
+            Some(&self.key_slice[leaf])
         }
     }
 
