@@ -106,7 +106,7 @@ where
     ///
     /// `set` attempts to reconfigure the tree for future lookups by promoting the key to the top of
     /// the tree.
-    pub fn set(&mut self, key: K, value: V) {
+    pub fn set(&mut self, key: K, value: V) -> &(K, V) {
         let tree = &mut self.tree.borrow_mut();
 
         let leaf = tree.set_kv(&key, &self.key_value);
@@ -117,6 +117,8 @@ where
         } else {
             self.key_value[leaf] = (key, value);
         }
+
+        &self.key_value[leaf]
     }
 
     /// Unset a value by key.
@@ -358,7 +360,7 @@ impl<V> StringMap<V> {
     ///
     /// `set` attempts to reconfigure the tree for future lookups by promoting the string to the top
     /// of the tree.
-    pub fn set(&mut self, key: &str, value: V) {
+    pub fn set(&mut self, key: &str, value: V) -> (&str, &V) {
         let tree = &mut self.tree.borrow_mut();
 
         let leaf = tree.set_sv(key, &self.key_value);
@@ -369,6 +371,9 @@ impl<V> StringMap<V> {
         } else {
             self.key_value[leaf] = (CompactString::new(key), value);
         };
+
+        let key_value = &self.key_value[leaf];
+        (&key_value.0, &key_value.1)
     }
 
     /// Unset a value by string.
@@ -607,7 +612,7 @@ where
     ///
     /// `set` attempts to reconfigure the tree for future lookups by promoting the key to the top of
     /// the tree.
-    pub fn set(&mut self, key: K, value: V) {
+    pub fn set(&mut self, key: K, value: V) -> &(K, V) {
         let tree = &mut self.tree.borrow_mut();
 
         let leaf = tree.set_kv_by(&key, &self.key_value, &self.compare);
@@ -618,6 +623,8 @@ where
         } else {
             self.key_value[leaf] = (key, value);
         }
+
+        &self.key_value[leaf]
     }
 
     /// Unset a value by key.
@@ -845,7 +852,7 @@ where
     ///
     /// `set` attempts to reconfigure the tree for future lookups by promoting the string to the top
     /// of the tree.
-    pub fn set(&mut self, key: &str, value: V) {
+    pub fn set(&mut self, key: &str, value: V) -> (&str, &V) {
         let tree = &mut self.tree.borrow_mut();
 
         let leaf = tree.set_sv_by(key, &self.key_value, &self.compare);
@@ -856,6 +863,9 @@ where
         } else {
             self.key_value[leaf] = (CompactString::new(key), value);
         };
+
+        let key_value = &self.key_value[leaf];
+        (&key_value.0, &key_value.1)
     }
 
     /// Unset a value by string.

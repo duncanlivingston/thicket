@@ -90,7 +90,7 @@ where
     ///
     /// `set` attempts to reconfigure the tree for future lookups by promoting the key to the top of
     /// the tree.
-    pub fn set(&mut self, key: K) {
+    pub fn set(&mut self, key: K) -> &K {
         let tree = &mut self.tree.borrow_mut();
 
         let leaf = tree.set_k(&key, &self.key_slice);
@@ -101,6 +101,8 @@ where
         } else {
             self.key_slice[leaf] = key;
         }
+
+        &self.key_slice[leaf]
     }
 
     /// Unset a value by key.
@@ -322,7 +324,7 @@ impl StringSet {
     ///
     /// `set` attempts to reconfigure the tree for future lookups by promoting the string to the top
     /// of the tree.
-    pub fn set(&mut self, key: &str) {
+    pub fn set(&mut self, key: &str) -> &str {
         let tree = &mut self.tree.borrow_mut();
 
         let leaf = tree.set_s(key, &self.key_slice);
@@ -333,6 +335,8 @@ impl StringSet {
         } else {
             self.key_slice[leaf] = CompactString::new(key);
         };
+
+        &self.key_slice[leaf]
     }
 
     /// Unset a value by string.
@@ -550,7 +554,7 @@ where
     ///
     /// `set` attempts to reconfigure the tree for future lookups by promoting the key to the top of
     /// the tree.
-    pub fn set(&mut self, key: K) {
+    pub fn set(&mut self, key: K) -> &K {
         let tree = &mut self.tree.borrow_mut();
 
         let leaf = tree.set_k_by(&key, &self.key_slice, &self.compare);
@@ -561,6 +565,8 @@ where
         } else {
             self.key_slice[leaf] = key;
         }
+
+        &self.key_slice[leaf]
     }
 
     /// Unset a value by key.
@@ -768,7 +774,7 @@ where
     ///
     /// `set` attempts to reconfigure the tree for future lookups by promoting the string to the top
     /// of the tree.
-    pub fn set(&mut self, key: &str) {
+    pub fn set(&mut self, key: &str) -> &str {
         let tree = &mut self.tree.borrow_mut();
 
         let leaf = tree.set_s_by(key, &self.key_slice, &self.compare);
@@ -779,6 +785,8 @@ where
         } else {
             self.key_slice[leaf] = CompactString::new(key);
         };
+
+        &self.key_slice[leaf]
     }
 
     /// Unset a value by string.
