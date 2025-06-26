@@ -1,0 +1,16 @@
+[package]
+name = "thicket"
+version = "0.1.0"
+edition = "2021"
+description = "Collections using splay trees"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/duncanlivingston/thicket"
+keywords = ["container", "splay", "sort", "map", "set" ]
+categories = ["algorithms", "no-std"]
+readme = "README.md"
+
+[dependencies]
+compact_str = { version = "0.9", default-features = false }
+
+[dev-dependencies]
+rand = "0.9"
