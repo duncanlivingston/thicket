@@ -56,7 +56,7 @@ where
     /// Remove all key/value pairs from the `Map`
     pub fn clear(&mut self) {
         self.tree.borrow_mut().clear();
-        self.key_value.truncate(0);
+        self.key_value.clear();
     }
 
     /// Reserves capacity for at least `additional` more key/value pairs
@@ -132,6 +132,46 @@ where
         } else {
             tree.unset(leaf);
             Some(&self.key_value[leaf])
+        }
+    }
+
+    /// Swap the values of two keys. If both keys do not exist as key/value
+    /// pairs, this this function has no effect. If both keys do exist, then the
+    /// values are swapped. If only one key exists then the value is effectively
+    /// moved from one key to the other.
+    #[allow(clippy::type_complexity)]
+    pub fn swap(&mut self, key_0: &K, key_1: &K) -> (Option<&(K, V)>, Option<&(K, V)>) {
+        let tree = &mut self.tree.borrow_mut();
+
+        let leaf_0 = tree.get_kv(key_0, &self.key_value);
+        let leaf_1 = tree.get_kv(key_1, &self.key_value);
+
+        if !leaf_0 == 0 {
+            if !leaf_1 == 0 {
+                (None, None)
+            } else {
+                tree.unset(leaf_1);
+                let leaf_0 = tree.set_kv(key_0, &self.key_value);
+                debug_assert_eq!(leaf_0, leaf_1);
+                self.tree.borrow_mut().promote(leaf_0);
+                (Some(&self.key_value[leaf_0]), None)
+            }
+        } else if !leaf_1 == 0 {
+            tree.unset(leaf_0);
+            let leaf_1 = tree.set_kv(key_1, &self.key_value);
+            debug_assert_eq!(leaf_0, leaf_1);
+            self.tree.borrow_mut().promote(leaf_1);
+            (None, Some(&self.key_value[leaf_1]))
+        } else {
+            if leaf_0 < leaf_1 {
+                let (slice_0, slice_1) = self.key_value.split_at_mut(leaf_1);
+                core::mem::swap(&mut slice_0[leaf_0].1, &mut slice_1[0].1);
+            } else {
+                let (slice_0, slice_1) = self.key_value.split_at_mut(leaf_0);
+                core::mem::swap(&mut slice_0[leaf_1].1, &mut slice_1[0].1);
+            }
+
+            (Some(&self.key_value[leaf_0]), Some(&self.key_value[leaf_1]))
         }
     }
 
@@ -310,7 +350,7 @@ impl<V> StringMap<V> {
     /// Remove all string/value pairs from the `StringMap`
     pub fn clear(&mut self) {
         self.tree.borrow_mut().clear();
-        self.key_value.truncate(0);
+        self.key_value.clear();
     }
 
     /// Reserves capacity for at least `additional` more string/value pairs
@@ -565,7 +605,7 @@ where
     /// Remove all key/value pairs from the `Map`
     pub fn clear(&mut self) {
         self.tree.borrow_mut().clear();
-        self.key_value.truncate(0);
+        self.key_value.clear();
     }
 
     /// Reserves capacity for at least `additional` more key/value pairs
@@ -805,7 +845,7 @@ where
     /// Remove all string/value pairs from the `StringMap`
     pub fn clear(&mut self) {
         self.tree.borrow_mut().clear();
-        self.key_value.truncate(0);
+        self.key_value.clear();
     }
 
     /// Reserves capacity for at least `additional` more string/value pairs

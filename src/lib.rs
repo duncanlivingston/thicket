@@ -28,8 +28,8 @@
 //!   managed internally and when keys are removed that memory is recycled for future use.
 //! - The storage of the (key, value) pair is separate to the storage of the structure of the tree.
 //!   This has subtle benefits such as removing a (key, value) pair does not immediately remove them
-//!   from strage. That means, for example that the `pop_first()` returns a reference `&(K, V)` not
-//!   a value `(K, V)`.
+//!   from storage. That means, for example, that the `pop_first()` returns a reference `&(K, V)`
+//!   not a value `(K, V)`.
 //!
 //! ## Contents
 //!

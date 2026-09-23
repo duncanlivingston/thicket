@@ -56,7 +56,7 @@ where
     /// Remove all key/value pairs from the `Set`
     pub fn clear(&mut self) {
         self.tree.borrow_mut().clear();
-        self.key_slice.truncate(0);
+        self.key_slice.clear();
     }
 
     /// Reserves capacity for at least `additional` more key/value pairs
@@ -294,7 +294,7 @@ impl StringSet {
     /// Remove all string/value pairs from the `StringSet`
     pub fn clear(&mut self) {
         self.tree.borrow_mut().clear();
-        self.key_slice.truncate(0);
+        self.key_slice.clear();
     }
 
     /// Reserves capacity for at least `additional` more string/value pairs
@@ -526,7 +526,7 @@ where
     /// Remove all key/value pairs from the `Set`
     pub fn clear(&mut self) {
         self.tree.borrow_mut().clear();
-        self.key_slice.truncate(0);
+        self.key_slice.clear();
     }
 
     /// Reserves capacity for at least `additional` more key/value pairs
@@ -750,7 +750,7 @@ where
     /// Remove all string/value pairs from the `StringSet`
     pub fn clear(&mut self) {
         self.tree.borrow_mut().clear();
-        self.key_slice.truncate(0);
+        self.key_slice.clear();
     }
 
     /// Reserves capacity for at least `additional` more string/value pairs

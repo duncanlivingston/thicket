@@ -70,7 +70,7 @@ impl Tree {
 
     /// Remove all keys from the splay tree
     pub fn clear(&mut self) {
-        self.leaf.truncate(0);
+        self.leaf.clear();
         self.root = !0;
         self.recycle = !0;
         self.count = 0;
@@ -246,8 +246,6 @@ impl Tree {
             }
         }
     }
-
-    ////////////////. HERE
 
     /// Get a leaf by key
     ///
@@ -444,7 +442,7 @@ impl Tree {
     /// Unset a leaf
     ///
     /// The leaf is deleted and added to the 'recycle bin' for possible future reallocation. This is
-    /// the only metho of `Tree` that possibly needs to automnatically apply a large-scale
+    /// the only method of `Tree` that possibly needs to automnatically apply a large-scale
     /// restructuring of the tree using a splay. This may be required if the leaf is tricky to
     /// disconnect from it's neighbouring leaves.
     pub fn unset(&mut self, leaf: usize) {
@@ -554,6 +552,133 @@ impl Display for Tree {
         }
         write!(f, "]")?;
         Ok(())
+    }
+}
+
+//-----------------------------------------------------------------------------------------------//
+
+/// A collection of trees of integer leaves
+#[derive(Clone)]
+pub struct Thicket {
+    tree_root: Vec<usize>,
+    leaf_tree: Vec<usize>,
+    leaf: Vec<Leaf>,
+}
+
+impl Thicket {
+    /// Construct an empty thicket
+    pub fn new() -> Thicket {
+        Thicket {
+            tree_root: Vec::new(),
+            leaf_tree: Vec::new(),
+            leaf: Vec::new(),
+        }
+    }
+
+    /// Construct an empty thicket, pre-allocating a given capacity of trees and leaves
+    pub fn with_capacity(tree_capacity: usize, leaf_capacity: usize) -> Thicket {
+        Thicket {
+            tree_root: Vec::with_capacity(tree_capacity),
+            leaf_tree: Vec::with_capacity(leaf_capacity),
+            leaf: Vec::with_capacity(leaf_capacity),
+        }
+    }
+
+    /// Construct a thicket of trees and leaves
+    pub fn with_range(tree_range: usize, leaf_range: usize) -> Thicket {
+        Thicket {
+            tree_root: alloc::vec![!0; tree_range],
+            leaf_tree: alloc::vec![!0; leaf_range],
+            leaf: alloc::vec![Leaf { parent: !0, left: !0, right: !0 }; leaf_range],
+        }
+    }
+
+    /// Get the tree that a leaf belongs to
+    #[inline]
+    pub fn leaf_get(&self, leaf: usize) -> usize {
+        self.leaf_tree[leaf]
+    }
+
+    /// Set the tree that a leaf belongs to
+    pub fn leaf_set(&mut self, leaf: usize, tree: usize) {
+        self.leaf_unset(leaf);
+
+        // First leaf is a special case
+        let mut x = self.tree_root[tree];
+        if !x == 0 {
+            self.tree_root[tree] = leaf;
+            return;
+        }
+
+        loop {
+            debug_assert_ne!(x, leaf);
+            if x < leaf {
+                let y = self.leaf[x].left;
+                if !y == 0 {
+                    self.leaf[x].left = leaf;
+                    self.leaf[leaf].parent = x;
+                    return;
+                }
+                x = y;
+            } else {
+                let y = self.leaf[x].right;
+                if !y == 0 {
+                    self.leaf[x].right = leaf;
+                    self.leaf[leaf].parent = x;
+                }
+                x = y;
+            }
+        }
+    }
+
+    /// Unset the tree that a leaf belongs to
+    pub fn leaf_unset(&mut self, leaf: usize) {
+        let tree = self.leaf_tree[leaf];
+        if !tree != 0 {
+            return;
+        }
+
+        if let Some(root) = prune(&mut self.leaf, leaf) {
+            self.tree_root[tree] = root;
+        }
+
+        self.leaf[leaf] = Leaf {
+            parent: !0,
+            left: !0,
+            right: !0,
+        };
+
+        self.leaf_tree[leaf] = !0;
+    }
+
+    /// Get the first leaf in a tree
+    #[inline]
+    pub fn tree_first(&self, tree: usize) -> usize {
+        first(&self.leaf, tree)
+    }
+
+    /// Get the last leaf in a tree
+    #[inline]
+    pub fn tree_last(&self, tree: usize) -> usize {
+        last(&self.leaf, tree)
+    }
+
+    /// Get the previous leaf in a tree
+    #[inline]
+    pub fn leaf_prev(&self, leaf: usize) -> usize {
+        prev(&self.leaf, leaf)
+    }
+
+    /// Get the next leaf in a tree
+    #[inline]
+    pub fn leaf_next(&self, leaf: usize) -> usize {
+        next(&self.leaf, leaf)
+    }
+}
+
+impl Default for Thicket {
+    fn default() -> Self {
+        Self::new()
     }
 }
 
